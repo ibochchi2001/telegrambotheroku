@@ -6,7 +6,7 @@ from telegram import *
 TOKEN = os.environ['TOKEN_TELEGRAM']
 PORT = int(os.environ['PORT'])
 
-bot = telegram.Bot(TOKEN)
+bot = telegram.Bot('718228299:AAF8CMQLYXHzIEqtyLjIflkYdnJYfzhsxF4')
 
 def build_menu(buttons,
                n_cols,
