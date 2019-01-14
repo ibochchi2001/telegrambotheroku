@@ -1,2 +1,2 @@
 TOKEN = '718228299:AAF8CMQLYXHzIEqtyLjIflkYdnJYfzhsxF4'
-APP_NAME = 'salombot
+APP_NAME = 'salombot'
