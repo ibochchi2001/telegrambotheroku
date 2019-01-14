@@ -2,13 +2,12 @@ import telebot
 from telebot import types
 import bs4,requests
 
-bot = telebot.TeleBot("717226876:AAHKv0oOw8wZ0PTEai2G0kqfARjoKVi7mQU")
+bot = telebot.TeleBot("717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0")
 
 
 @bot.message_handler(commands=['start'])
 def hendle_start(message):
-    f_name = message.first_name
-    some_text = "Assalomu alaykum"+f_name+"!"
+    some_text = "Assalomu alaykum"
     bot.send_message(message.from_user.id, some_text)
 @bot.message_handler(commands=['vaqt'])
 def vaqt(message):
