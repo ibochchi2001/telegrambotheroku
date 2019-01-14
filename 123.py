@@ -1,34 +1,48 @@
-import telebot
-from telebot import types
-import bs4,requests
+import logging
+import os
+import random
+import sys
 
-bot = telebot.TeleBot("717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0")
+from telegram.ext import Updater, CommandHandler
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger()
+
+mode = os.getenv("MODE")
+TOKEN = os.getenv("717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0")
+if mode == "dev":
+    def run(updater):
+        updater.start_polling()
+elif mode == "prod":
+    def run(updater):
+        PORT = int(os.environ.get("PORT", "8443"))
+        HEROKU_APP_NAME = os.environ.get("salombot")
+        updater.start_webhook(listen="0.0.0.0",
+                              port=PORT,
+                              url_path=TOKEN)
+        updater.bot.set_webhook("https://{}.herokuapp.com/{}".format(HEROKU_APP_NAME, TOKEN))
+else:
+    logger.error("No MODE specified!")
+    sys.exit(1)
 
 
-@bot.message_handler(commands=['start'])
-def hendle_start(message):
-    some_text = "Assalomu alaykum"
-    bot.send_message(message.from_user.id, some_text)
-@bot.message_handler(commands=['vaqt'])
-def vaqt(message):
-    s=requests.get('https://islom.uz')
-    b=bs4.BeautifulSoup(s.text, "html.parser")
-    p3=b.select('#tc1')
-    Tong=p3[0].getText()
-    
-    p4=b.select('#tc2')
-    Quyosh=p4[0].getText()
-    
-    p5=b.select('#tc3')
-    Peshin=p5[0].getText()
-    
-    p6=b.select('#tc4')
-    Asr=p6[0].getText()
-    
-    p7=b.select('#tc5')
-    Shom=p7[0].getText()
-    p8=b.select('#tc6')
-    Xufton=p8[0].getText()
-    bot.send_message(message.from_user.id, "*Namoz vaqtlari*\n\n_Tong: _ `{}`\n_Quyosh: _ `{}`\n_Peshin: _ `{}`\n_Asr: _ `{}`\n_Shom: _ `{}`\n_Xufton: _ `{}`".format(Tong,Quyosh,Peshin,Asr,Shom,Xufton), parse_mode="markdown")
+def start_handler(bot, update):
+    logger.info("User {} started bot".format(update.effective_user["id"]))
+    update.message.reply_text("Hello from Python!\nPress /random to get random number")
 
-bot.polling(none_stop="True")
+
+def random_handler(bot, update):
+    number = random.randint(0, 10)
+    logger.info("User {} randomed number {}".format(update.effective_user["id"], number))
+    update.message.reply_text("Random number: {}".format(number))
+
+
+if __name__ == '__main__':
+    logger.info("Starting bot")
+    updater = Updater(TOKEN)
+
+    updater.dispatcher.add_handler(CommandHandler("start", start_handler))
+    updater.dispatcher.add_handler(CommandHandler("random", random_handler))
+
+    run(updater)
