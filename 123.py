@@ -1,7 +1,7 @@
 import logging
 import os
 
-import constants
+import connector
 import telebot
 from telebot import types
 
