@@ -1,4 +1,5 @@
 import telebot
+import os
 import constants
 
 bot = telebot.TeleBot(constants.token)
