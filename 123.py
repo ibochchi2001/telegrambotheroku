@@ -7,8 +7,8 @@ bot = telebot.TeleBot("717226876:AAHKv0oOw8wZ0PTEai2G0kqfARjoKVi7mQU")
 
 @bot.message_handler(commands=['start'])
 def hendle_start(message):
-    f_name = message.from_user.first_name
-    some_text = "Assalomu alaykum"+f_name+" "
+    f_name = message.first_name
+    some_text = "Assalomu alaykum"+f_name+"!"
     bot.send_message(message.from_user.id, some_text)
 @bot.message_handler(commands=['vaqt'])
 def vaqt(message):
