@@ -44,7 +44,7 @@ def answerInlineQuery(bot,update):
 
 updater = Updater(TOKEN)
 
-updater.bot.set_webhook("https://webh00k.herokuapp.com/" + TOKEN)
+updater.bot.set_webhook("https://salombot.herokuapp.com/" + TOKEN)
 updater.start_webhook(listen="0.0.0.0",
                       port=PORT,
                       url_path=TOKEN)
