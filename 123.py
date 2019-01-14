@@ -10,6 +10,6 @@ def hendle_start(message):
     bot.send_message(message.from_user.id, some_text)
 @bot.message_handler(commands=['vaqt'])
 def vaqt(message):
-    bot.send_message(message.chat.id, "Vaqt")
+    bot.send_message(message.from_user.id, "Vaqt")
 
 bot.polling(none_stop="True", interval=0)
