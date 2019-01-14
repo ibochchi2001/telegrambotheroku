@@ -3,10 +3,10 @@ import telegram
 from telegram.ext import *
 from telegram import *
 
-TOKEN = os.environ['TOKEN_TELEGRAM']
+TOKEN = os.environ['718228299:AAF8CMQLYXHzIEqtyLjIflkYdnJYfzhsxF4']
 PORT = int(os.environ['PORT'])
 
-bot = telegram.Bot('718228299:AAF8CMQLYXHzIEqtyLjIflkYdnJYfzhsxF4')
+bot = telegram.Bot(TOKEN)
 
 def build_menu(buttons,
                n_cols,
