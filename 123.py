@@ -31,8 +31,8 @@ def setup(token):
     dispatcher = Dispatcher(bot, update_queue)
 
     ##### Register handlers here #####
-	echo_handler = MessageHandler(Filters.text, echo)
-	dispatcher.add_handler(echo_handler)
+    echo_handler = MessageHandler(Filters.text, echo)
+    dispatcher.add_handler(echo_handler)
 
     # Start the thread
     thread = Thread(target=dispatcher.start, name='dispatcher')
