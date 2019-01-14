@@ -1,62 +1,57 @@
-from queue import Queue
-from threading import Thread
-from flask import Flask, request
-from telegram.ext import MessageHandler, Filters
-
-from telegram import Bot,Update
-from telegram.ext import Dispatcher
-import logging
-import sys
 import os
+import telegram
+from telegram.ext import *
+from telegram import *
 
-file_handler = logging.FileHandler(filename='log.txt',encoding='utf-8')
-stdout_handler = logging.StreamHandler(sys.stdout)
-handlers = [file_handler, stdout_handler]
+TOKEN = os.environ['717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0']
+PORT = int(os.environ['8083'])
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO,handlers=handlers)
+bot = telegram.Bot(TOKEN)
 
-logger = logging.getLogger(__name__)
+def build_menu(buttons,
+               n_cols,
+               header_buttons=None,
+               footer_buttons=None):
+    menu = [buttons[i:i + n_cols] for i in range(0, len(buttons), n_cols)]
+    if header_buttons:
+        menu.insert(0, header_buttons)
+    if footer_buttons:
+        menu.append(footer_buttons)
+    return menu
 
-token = "717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0"
-NAME = "salombot"
-PORT = int(os.environ.get('PORT', '8443'))
+def start(bot, update):
+    #update.message.reply_text("hello world")
+    #bot.send_message(text="ciao mondo", chat_id = update.message.chat_id)
+    button_list = [
+                   InlineKeyboardButton("start", callback_data='start'),
+                   InlineKeyboardButton("stop", callback_data='stop'),
+    ]
+    reply_markup = InlineKeyboardMarkup(build_menu(button_list, n_cols=2))
+    bot.send_message(chat_id = update.message.chat_id , text="Benvenuto nuovo utente. Premi start per avviare il conteggio del tempo, mentre premi stop per fermarlo", reply_markup=reply_markup)
 
-bot = Bot(token)
+def hello(bot, update):
+    update.message.reply_text(
+        'Hello {}'.format(update.message.from_user.first_name))
 
-def setup(token):
-    # update queue and dispatcher instances
-    update_queue = Queue()
-
-    dispatcher = Dispatcher(bot, update_queue)
-
-    ##### Register handlers here #####
-    echo_handler = MessageHandler(Filters.text, echo)
-    dispatcher.add_handler(echo_handler)
-
-    # Start the thread
-    thread = Thread(target=dispatcher.start, name='dispatcher')
-    thread.start()
-
-    return update_queue
-    # you might want to return dispatcher as well,
-    # to stop it at server shutdown, or to register more handlers:
-    # return (update_queue, dispatcher)
-
-app = Flask(__name__)
-uq = setup(token)
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+def call(bot, update):
+    update.message.reply_text(
+        'Hello {}'.format(update.message.text))
+    
+def answerInlineQuery(bot,update):
+  print(query)
+  print(user_data)
 
 
-@app.route('/'+token, methods=['GET','POST'])
-def pass_update():
-    up = Update.de_json(request.get_json(force=True),bot)
-    uq.put(up)
-    return "ok"
+updater = Updater(TOKEN)
 
-if __name__ == '__main__':
-    bot.setWebhook("https://{}.herokuapp.com/{}".format(NAME, token))
-    app.run(host='0.0.0.0',port=PORT,debug=True)
+updater.bot.set_webhook("https://salombot.herokuapp.com/" + TOKEN)
+updater.start_webhook(listen="0.0.0.0",
+                      port=PORT,
+                      url_path=TOKEN)
+  
+updater.dispatcher.add_handler(CommandHandler('start', start))
+updater.dispatcher.add_handler(CommandHandler('hello', hello))
+updater.dispatcher.add_handler( InlineQueryHandler(callback = answerInlineQuery, pass_user_data = True ) )
+updater.dispatcher.add_handler(MessageHandler(Filters.text, callback=call))
+
+updater.idle()
