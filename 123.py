@@ -29,6 +29,6 @@ def vaqt(message):
     Shom=p7[0].getText()
     p8=b.select('#tc6')
     Xufton=p8[0].getText()
-    bot.send_message(message.from_user.id, "**Vaqt**\nTong {}\nQuyosh: {}\nPeshin: {}\nAsr: {}\nShom: {}\nXufton: {}".format(Tong,Quyosh,Peshin,Asr,Shom,Xufton))
+    bot.send_message(message.from_user.id, "**Vaqt**\n__Tong:__ `{}`\n__Quyosh:__ `{}`\n__Peshin:__ `{}`\n__Asr:__ `{}`\n__Shom:__ `{}`\n__Xufton:__ `{}`".format(Tong,Quyosh,Peshin,Asr,Shom,Xufton), parse_mode="markdown
 
 bot.polling(none_stop="True", interval=0)
