@@ -1,48 +1,62 @@
+from queue import Queue
+from threading import Thread
+from flask import Flask, request
+from telegram.ext import MessageHandler, Filters
+
+from telegram import Bot,Update
+from telegram.ext import Dispatcher
 import logging
-import os
-import random
 import sys
+import os
 
-from telegram.ext import Updater, CommandHandler
+file_handler = logging.FileHandler(filename='log.txt',encoding='utf-8')
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO,handlers=handlers)
 
-mode = os.getenv("prod")
-TOKEN = os.getenv("717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0")
-if mode == "dev":
-    def run(updater):
-        updater.start_polling()
-elif mode == "prod":
-    def run(updater):
-        PORT = int(os.environ.get("PORT", "8443"))
-        HEROKU_APP_NAME = os.environ.get("salombot")
-        updater.start_webhook(listen="0.0.0.0",
-                              port=PORT,
-                              url_path=TOKEN)
-        updater.bot.set_webhook("https://{}.herokuapp.com/{}".format(HEROKU_APP_NAME, TOKEN))
-else:
-    logger.error("No MODE specified!")
-    sys.exit(1)
+logger = logging.getLogger(__name__)
+
+token = "717226876:AAHD2IGS4EZ91P0N1RhqxPuNPxQKZiTCri0"
+NAME = "salombot"
+PORT = int(os.environ.get('PORT', '8443'))
+
+bot = Bot(token)
+
+def setup(token):
+    # update queue and dispatcher instances
+    update_queue = Queue()
+
+    dispatcher = Dispatcher(bot, update_queue)
+
+    ##### Register handlers here #####
+	echo_handler = MessageHandler(Filters.text, echo)
+	dispatcher.add_handler(echo_handler)
+
+    # Start the thread
+    thread = Thread(target=dispatcher.start, name='dispatcher')
+    thread.start()
+
+    return update_queue
+    # you might want to return dispatcher as well,
+    # to stop it at server shutdown, or to register more handlers:
+    # return (update_queue, dispatcher)
+
+app = Flask(__name__)
+uq = setup(token)
+
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
 
 
-def start_handler(bot, update):
-    logger.info("User {} started bot".format(update.effective_user["id"]))
-    update.message.reply_text("Hello from Python!\nPress /random to get random number")
-
-
-def random_handler(bot, update):
-    number = random.randint(0, 10)
-    logger.info("User {} randomed number {}".format(update.effective_user["id"], number))
-    update.message.reply_text("Random number: {}".format(number))
-
+@app.route('/'+token, methods=['GET','POST'])
+def pass_update():
+    up = Update.de_json(request.get_json(force=True),bot)
+    uq.put(up)
+    return "ok"
 
 if __name__ == '__main__':
-    logger.info("Starting bot")
-    updater = Updater(TOKEN)
-
-    updater.dispatcher.add_handler(CommandHandler("start", start_handler))
-    updater.dispatcher.add_handler(CommandHandler("random", random_handler))
-
-    run(updater)
+    bot.setWebhook("https://{}.herokuapp.com/{}".format(NAME, token))
+    app.run(host='0.0.0.0',port=PORT,debug=True)
