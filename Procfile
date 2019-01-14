@@ -1,1 +1,1 @@
-web: gunicorn run_server:server
+web: python 123.py
