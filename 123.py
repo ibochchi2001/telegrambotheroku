@@ -31,4 +31,4 @@ def vaqt(message):
     Xufton=p8[0].getText()
     bot.send_message(message.from_user.id, "*Namoz vaqtlari*\n\n_Tong: _ `{}`\n_Quyosh: _ `{}`\n_Peshin: _ `{}`\n_Asr: _ `{}`\n_Shom: _ `{}`\n_Xufton: _ `{}`".format(Tong,Quyosh,Peshin,Asr,Shom,Xufton), parse_mode="markdown")
 
-bot.polling(none_stop="True", interval=0)
+bot.polling(none_stop="True")
