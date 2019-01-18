@@ -1,7 +1,4 @@
 import os
-from bs4 import BeautifulSoup
-import re
-import requests
 from flask import Flask, request
 
 import telebot
@@ -21,11 +18,7 @@ def echo_message(message):
     bot.reply_to(message, message.text)
 @bot.message_handler(commands=['vaqt'])
 def vaqt():
-    url = requests.get("http://islom.uz")
-    soup = BeautifulSoup(url.text, "html.parser")
-
-    for span in soup.find_all("div", "p_clock", text=re.compile(r'\d{2}:\d{2}')):
-        bot.send_message(message.chat.id, "Vaqt"+span.text.split()[0])
+    bot.send_message(message.chat.id, "Vaqt"+span.text.split()[0])
     
 
 @server.route('/' + TOKEN, methods=['POST'])
