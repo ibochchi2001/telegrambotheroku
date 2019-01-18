@@ -1,5 +1,4 @@
 Flask
 pytelegrambotapi
-re
 bs4
 requests
