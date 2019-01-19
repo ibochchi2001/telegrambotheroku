@@ -1,1 +1,4 @@
-web: python3 bot.py
+web: python bot.py $PORT
+heroku ps:scale web=1
+
+
