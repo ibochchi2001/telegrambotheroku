@@ -76,4 +76,4 @@ def askAmount(message):
         output = parser.getTitlesFromAll(int(text), task.myFilter)
     msg = bot.send_message(chat_id, output)
 
-bot.polling(none_stop=True)
+bot.polling(none_stop=True, interval=0)
